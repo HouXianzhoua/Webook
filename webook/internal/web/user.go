@@ -3,17 +3,21 @@ package web
 import (
 	"fmt"
 
+	"example.com/webook/internal/domain"
+	"example.com/webook/internal/service"
 	"github.com/dlclark/regexp2"
 	"github.com/gin-gonic/gin"
 )
 
 // UserHandler is a handler for user-related requests
 type UserHandler struct {
+	svc *service.UserService
 	emailExp    *regexp2.Regexp
 	passwordExp *regexp2.Regexp
 }
 
-func NewUserHandler() *UserHandler {
+
+func NewUserHandler(svc *service.UserService) *UserHandler {
 	const (
 		emailRegexPattern    = `^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$`
 		passwordRegexPattern = `^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{8,}$`
@@ -28,6 +32,7 @@ func NewUserHandler() *UserHandler {
 		panic(err)	
 	}
 	return &UserHandler{
+		svc:svc,
 		emailExp: emailExp,
 		passwordExp: passwordExp, 
 	}
@@ -92,6 +97,16 @@ func (u *UserHandler) SignUp(ctx *gin.Context) {
 		ctx.String(400, "Invalid password")
 		println("Invalid password")
 		return
+	}
+
+	//
+	err=u.svc.Signup(ctx,domain.User{
+		Email: req.Email,
+		Password: req.Password,
+	})
+	if err!=nil{
+		ctx.String(500, "Internal Server Error")
+		return 	
 	}
 	ctx.String(200, fmt.Sprintf("hello,%v", req))
 }

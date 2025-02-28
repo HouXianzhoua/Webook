@@ -4,9 +4,14 @@ import (
 	"strings"
 	"time"
 
+	"example.com/webook/internal/repository"
+	"example.com/webook/internal/repository/dao"
+	"example.com/webook/internal/service"
 	"example.com/webook/internal/web"
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
+	"gorm.io/driver/mysql"
+	"gorm.io/gorm"
 )
 
 func main() {
@@ -29,7 +34,20 @@ func main() {
 		},
 		MaxAge:12*time.Hour,
 	}))
-	u := web.NewUserHandler()
+	db,err:=gorm.Open(mysql.Open("root:root@tcp(localhost:13316)/webook")) 
+	if err != nil { 
+		panic(err)
+	}
+
+	err=dao.InitTables(db)
+	if err != nil {
+		panic(err)
+	}
+
+	ud:=dao.NewUserDao(db)
+	repo:=repository.NewUserRepository(ud)
+	svc:=service.NewUserService(repo)
+	u := web.NewUserHandler(svc)
 	u.RegisterRoutes(server)
 	server.Run(":8080")
 }
