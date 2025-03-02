@@ -1,17 +1,3 @@
 {
-    "sqltools.connections": [
-        {
-            "mysqlOptions": {
-                "authProtocol": "default",
-                "enableSsl": "Disabled"
-            },
-            "previewLimit": 50,
-            "server": "localhost",
-            "port": 13316,
-            "driver": "MySQL",
-            "name": "webook-dev-mysql8",
-            "username": "root",
-            "database": "webook"
-        }
-    ]
+    "sqltools.connections": []
 }
