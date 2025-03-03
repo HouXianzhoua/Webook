@@ -22,7 +22,6 @@ func NewUserService(repo *repository.UserRepository) *UserService{
 	}
 }
 
-//GITHUB测试u.Password = string(hash)
 func(svc *UserService) Login (ctx context.Context,email,password string)(domain.User,error){
 	u,err:=svc.repo.FindByEmail(ctx,email)
 	if err==repository.ErrUserNotFound{
@@ -43,5 +42,6 @@ func(svc *UserService) Signup(ctx context.Context,u domain.User)error{
 	if err != nil {	
 		return err
 	}
+	u.Password = string(hash)
 	return svc.repo.Create(ctx,u)
 } 
