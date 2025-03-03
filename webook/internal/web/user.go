@@ -4,8 +4,10 @@ import (
 	"fmt"
 
 	"example.com/webook/internal/domain"
+	// "example.com/webook/internal/repository"
 	"example.com/webook/internal/service"
 	"github.com/dlclark/regexp2"
+	"github.com/gin-contrib/sessions"
 	"github.com/gin-gonic/gin"
 )
 
@@ -66,20 +68,18 @@ func (u *UserHandler) SignUp(ctx *gin.Context) {
 	if err := ctx.Bind(&req); err != nil {
 		return
 	}
-
 	// validate email
 	ok, err := u.emailExp.MatchString(req.Email)
 	println("validate email")
 	if err != nil {
 		ctx.String(500, "Internal Server Error")
-		println("Internal Server Error")
 		return
 	}
 	if !ok {
 		ctx.String(400, "Invalid email")
-		println("Invalid email")
 		return
 	}
+
 
 	// validate password
 	println("validate password")
@@ -104,15 +104,46 @@ func (u *UserHandler) SignUp(ctx *gin.Context) {
 		Email: req.Email,
 		Password: req.Password,
 	})
+	if err==service.ErrUserDuplicateEmail{
+		ctx.String(400, "Duplicate email")
+		return
+	}
 	if err!=nil{
 		ctx.String(500, "Internal Server Error")
 		return 	
 	}
+
+
 	ctx.String(200, fmt.Sprintf("hello,%v", req))
 }
 
 func (u *UserHandler) Login(ctx *gin.Context) {
 	// ...
+	type LoginReq struct {
+		Email    string `json:"email"`	
+		Password string `json:"password"`
+	}
+	 
+	var req LoginReq
+	if err:=ctx.Bind(&req);err!=nil{
+		return
+	}
+	 
+	user,err:=u.svc.Login(ctx,req.Email,req.Password)
+
+	if err==service.ErrInvalidUserOrPassword{
+		ctx.String(400, "Invalid user or password")
+		return
+	} 
+	if err != nil {
+		ctx.String(500, "Internal Server Error")
+		return
+	}
+	sess:=sessions.Default(ctx)
+	sess.Set("userId",user.ID)
+	sess.Save() 
+	ctx.String(200, fmt.Sprintf("hello,%v", req))
+	return
 }
 
 func (u *UserHandler) Edit(ctx *gin.Context) {
