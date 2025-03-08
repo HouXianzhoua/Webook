@@ -13,6 +13,7 @@ export interface Result<T> {
 }
 
 
+
 instance.interceptors.response.use(function (resp) {
     const newToken = resp.headers["x-jwt-token"]
     const newRefreshToken = resp.headers["x-refresh-token"]
@@ -22,9 +23,11 @@ instance.interceptors.response.use(function (resp) {
     if (newRefreshToken) {
         localStorage.setItem("refresh_token", newRefreshToken)
     }
+
     if (resp.status == 401) {
-        window.location.href="/users/login"
+        window.location.href="/users/login" 
     }
+
     return resp
 }, (err) => {
     console.log(err)

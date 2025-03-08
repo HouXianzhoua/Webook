@@ -9,6 +9,7 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
+
 var ErrUserDuplicateEmail = repository.ErrUserDuplicateEmail
 var ErrInvalidUserOrPassword = errors.New("invalid user or password")
 
@@ -26,7 +27,7 @@ func(svc *UserService) Login (ctx context.Context,email,password string)(domain.
 	u,err:=svc.repo.FindByEmail(ctx,email)
 	if err==repository.ErrUserNotFound{
 		return domain.User{},ErrInvalidUserOrPassword
-	} 
+	}
 	if err!=nil{
 		return domain.User{},err	
 	}  

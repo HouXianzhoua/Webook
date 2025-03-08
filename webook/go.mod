@@ -5,13 +5,13 @@ go 1.24.0
 require (
 	github.com/gin-contrib/cors v1.7.3
 	github.com/gin-gonic/gin v1.10.0
-	github.com/go-playground/assert/v2 v2.2.0
+	github.com/go-sql-driver/mysql v1.7.0
 	github.com/stretchr/testify v1.10.0
 )
 
 require (
 	github.com/davecgh/go-spew v1.1.1 // indirect
-	github.com/go-sql-driver/mysql v1.7.0 // indirect
+	github.com/gomodule/redigo v1.9.2 // indirect
 	github.com/gorilla/context v1.1.2 // indirect
 	github.com/gorilla/securecookie v1.1.2 // indirect
 	github.com/gorilla/sessions v1.2.2 // indirect
@@ -19,6 +19,8 @@ require (
 	github.com/jinzhu/now v1.1.5 // indirect
 	github.com/kr/text v0.2.0 // indirect
 	github.com/pmezard/go-difflib v1.0.0 // indirect
+	github.com/quasoft/memstore v0.0.0-20191010062613-2bce066d2b0b // indirect
+	github.com/snowdreamtech/redistore v0.0.0-20231007100540-6364ca2c97b4 // indirect
 )
 
 require (
