@@ -61,6 +61,7 @@ func initializeWebServer() *gin.Engine {
 		AllowMethods:     []string{"GET", "POST", "HEAD"},
 		// Only allow Content-Type and Authorization headers
 		AllowHeaders:     []string{"Content-Type", "authorization"},
+		ExposeHeaders:   []string{"x-jwt-token"},
 		// Allow credentials
 		AllowCredentials: true,
 		// Only allow requests from localhost or yourcompany.com
@@ -81,8 +82,8 @@ func initializeWebServer() *gin.Engine {
 	}
 	server.Use(sessions.Sessions("webook", store))
 	// Add login middleware
-	server.Use(middleware.NewLoginMiddlewareBuilder().
-	IgnorePaths("users/login").IgnorePaths("users/signup").Build())
+	server.Use(middleware.NewLoginJWTMiddlewareBuilder().IgnorePaths("/users/login").IgnorePaths("/users/signup").Build())
+	
 	return server
 }
 

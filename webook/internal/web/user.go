@@ -9,6 +9,7 @@ import (
 	"github.com/dlclark/regexp2"
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-gonic/gin"
+	"github.com/golang-jwt/jwt/v5"
 )
 
 // UserHandler is a handler for user-related requests
@@ -48,7 +49,7 @@ func (u *UserHandler) RegisterRoutes(server *gin.Engine) {
 	ug.POST("/signup", u.SignUp)
 
 	// Define the login route
-	ug.POST("/login", u.Login)
+	ug.POST("/login", u.LoginJWT)
 
 	// Define the edit route
 	ug.POST("/edit", u.Edit)
@@ -112,6 +113,34 @@ func (u *UserHandler) SignUp(ctx *gin.Context) {
 	ctx.String(200, fmt.Sprintf("hello,%v", req))
 }
 
+func (u *UserHandler) LoginJWT(ctx *gin.Context) {
+
+	type LoginReq struct {
+		Email    string `json:"email"`
+		Password string `json:"password"`
+	}
+
+	var req LoginReq
+	if err := ctx.Bind(&req); err != nil {
+		return
+	}
+
+	_, err := u.svc.Login(ctx, req.Email, req.Password)
+
+	if err == service.ErrInvalidUserOrPassword {
+		ctx.String(400, "Invalid user or password")
+		return
+	}
+	if err != nil {
+		ctx.String(500, "Internal Server Error")
+		return
+	}
+
+	token := jwt.New(jwt.SigningMethodHS512)
+	tokenString, _ := token.SignedString([]byte("secret"))
+	ctx.Header("x-jwt-token", tokenString)
+	ctx.String(200, fmt.Sprintf("hello,%v", req))
+}
 func (u *UserHandler) Login(ctx *gin.Context) {
 
 	type LoginReq struct {
